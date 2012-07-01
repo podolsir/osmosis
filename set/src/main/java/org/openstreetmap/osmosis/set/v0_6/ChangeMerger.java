@@ -6,7 +6,7 @@ import java.util.Collections;
 import org.openstreetmap.osmosis.core.OsmosisRuntimeException;
 import org.openstreetmap.osmosis.core.container.v0_6.ChangeContainer;
 import org.openstreetmap.osmosis.core.merge.common.ConflictResolutionMethod;
-import org.openstreetmap.osmosis.core.sort.v0_6.EntityByTypeThenIdThenVersionComparator;
+import org.openstreetmap.osmosis.core.sort.v0_6.EntityByTypeThenIdComparator;
 import org.openstreetmap.osmosis.core.sort.v0_6.EntityContainerComparator;
 import org.openstreetmap.osmosis.core.sort.v0_6.SortedHistoryChangePipeValidator;
 import org.openstreetmap.osmosis.core.store.DataPostbox;
@@ -98,7 +98,7 @@ public class ChangeMerger implements MultiChangeSinkRunnableChangeSource {
 			ChangeContainer changeContainer1 = null;
 			
 			// Create a comparator for comparing two entities by type and identifier.
-			comparator = new EntityContainerComparator(new EntityByTypeThenIdThenVersionComparator());
+			comparator = new EntityContainerComparator(new EntityByTypeThenIdComparator());
 			
 			// We can't get meaningful data from the initialize data on the
 			// input streams, so pass empty meta data to the sink and discard
