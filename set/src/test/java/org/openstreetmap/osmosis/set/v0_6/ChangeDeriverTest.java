@@ -107,6 +107,86 @@ public class ChangeDeriverTest extends AbstractDataTest {
 		Assert.assertEquals(78, e.getVersion());
 	}
 
+
+	/**
+	 * Tests the derived change after the modification of a node.
+	 * 
+	 * @throws Exception
+	 *             if something goes wrong
+	 */
+	@Test
+	public void modifyNode() throws Exception {
+		deriveChange("v0_6/derive_change/simple.osm", 
+				"v0_6/derive_change/modified.osm", 
+				"v0_6/derive_change/simple-modified.osc");
+	}
+	
+	/**
+	 * Tests the derived change after the modification with a lower 
+	 * version in the right file.
+	 * 
+	 * @throws Exception
+	 *             if something goes wrong
+	 */
+	@Test
+	public void modifyNodeLowerVersion() throws Exception {
+		deriveChange("v0_6/derive_change/simple.osm", 
+				"v0_6/derive_change/modified-lower.osm", 
+				"v0_6/derive_change/simple-modified-lower.osc");
+	}
+	
+	/**
+	 * Tests multiple changes between the left and right stream.
+	 * 
+	 * @throws Exception
+	 *             if something goes wrong
+	 */
+	@Test
+	public void multipleChanges() throws Exception {
+		// Cannot be tested with file comparison as the derived 
+		// change contains deletes which have a current timestamp 
+		// that cannot be reliably predicted.
+		// Therefore, check all relevant attributes manually.
+		
+		ChangeDeriver deriver = new ChangeDeriver(1);
+		RunnableSource left = new XmlReader(dataUtils.createDataFile(
+				"v0_6/derive_change/simple.osm"), true, CompressionMethod.None);
+		RunnableSource right = new XmlReader(dataUtils.createDataFile(
+				"v0_6/derive_change/modified-multiple.osm"), true, CompressionMethod.None);
+		
+		SinkChangeInspector result = RunTaskUtilities.run(deriver, left, right);
+		List<ChangeContainer> changes = result.getProcessedChanges();
+		
+		Assert.assertEquals(4, changes.size());
+		
+		Entity e;
+
+		Assert.assertEquals(ChangeAction.Modify, changes.get(0).getAction());
+		e = changes.get(0).getEntityContainer().getEntity();
+		Assert.assertEquals(EntityType.Node, e.getType());
+		Assert.assertEquals(10, e.getId());
+		Assert.assertEquals(35, e.getVersion());
+
+		Assert.assertEquals(ChangeAction.Create, changes.get(1).getAction());
+		e = changes.get(1).getEntityContainer().getEntity();
+		Assert.assertEquals(EntityType.Node, e.getType());
+		Assert.assertEquals(11, e.getId());
+		Assert.assertEquals(35, e.getVersion());
+		
+		Assert.assertEquals(ChangeAction.Delete, changes.get(2).getAction());
+		e = changes.get(2).getEntityContainer().getEntity();
+		Assert.assertEquals(EntityType.Way, e.getType());
+		Assert.assertEquals(100, e.getId());
+		Assert.assertEquals(56, e.getVersion());
+
+		Assert.assertEquals(ChangeAction.Modify, changes.get(3).getAction());
+		e = changes.get(3).getEntityContainer().getEntity();
+		Assert.assertEquals(EntityType.Relation, e.getType());
+		Assert.assertEquals(1000, e.getId());
+		Assert.assertEquals(79, e.getVersion());
+
+	}
+	
 	
 	private void deriveChange(String leftFileName, String rightFileName, 
 			String expectedOutputFileName) throws IOException {

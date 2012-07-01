@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="Osmosis %VERSION%">
+  <node id="10" version="35" timestamp="2008-01-02T03:04:06Z" uid="11" user="user11" lat="-5" lon="-6">
+    <tag k="created_by" v="Me1"/>
+    <tag k="changed" v="new_version"/>
+  </node>
+  <node id="11" version="35" timestamp="2008-01-02T03:04:06Z" uid="11" user="user11" lat="-7" lon="-8">
+    <tag k="created_by" v="Me1"/>
+    <tag k="changed" v="new_version"/>
+  </node>
+  <relation id="1000" version="79" timestamp="2008-01-02T03:04:05Z" uid="10" user="user10">
+    <member type="node" ref="1" role="noderole"/>
+    <member type="way" ref="1" role="wayrole"/>
+    <tag k="created_by" v="Me1"/>
+  </relation>
+</osm>
