@@ -3,6 +3,7 @@ package org.openstreetmap.osmosis.set.v0_6;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,28 +33,10 @@ public class EntityMergerTest extends AbstractDataTest {
 	 */
 	@Test
 	public void firstEmpty() throws Exception {
-		File sourceFile;
-		File expectedOutputFile;
-		File actualOutputFile;
-		
-		// Generate files.
-		sourceFile = dataUtils.createDataFile("v0_6/merge/merge-in-1.osm");
-		expectedOutputFile = dataUtils.createDataFile("v0_6/merge/merge-in-1.osm");
-		actualOutputFile = dataUtils.newFile();
-		
-		// Run the merge.
-		Osmosis.run(
-			new String [] {
-				"-q",
-				"--read-xml-0.6", sourceFile.getPath(),
-				"--read-empty-0.6",
-				"--merge",
-				"--write-xml-0.6", actualOutputFile.getPath()
-			}
-		);
-		
-		// Validate that the output file matches the expected result.
-		dataUtils.compareFiles(expectedOutputFile, actualOutputFile);
+		checkMerge("v0_6/empty-entity.osm",
+				"v0_6/merge/merge-in-1.osm",
+				"v0_6/merge/merge-in-1.osm", 
+				null);
 	}
 	
 	/**
@@ -63,28 +46,10 @@ public class EntityMergerTest extends AbstractDataTest {
 	 */
 	@Test
 	public void secondEmpty() throws Exception {
-		File sourceFile;
-		File expectedOutputFile;
-		File actualOutputFile;
-		
-		// Generate files.
-		sourceFile = dataUtils.createDataFile("v0_6/merge/merge-in-1.osm");
-		expectedOutputFile = dataUtils.createDataFile("v0_6/merge/merge-in-1.osm");
-		actualOutputFile = dataUtils.newFile();
-		
-		// Run the merge.
-		Osmosis.run(
-			new String [] {
-				"-q",
-				"--read-empty-0.6",
-				"--read-xml-0.6", sourceFile.getPath(),
-				"--merge",
-				"--write-xml-0.6", actualOutputFile.getPath()
-			}
-		);
-		
-		// Validate that the output file matches the expected result.
-		dataUtils.compareFiles(expectedOutputFile, actualOutputFile);
+		checkMerge("v0_6/merge/merge-in-1.osm", 
+				"v0_6/empty-entity.osm",
+				"v0_6/merge/merge-in-1.osm", 
+				null);
 	}
 	
 	/**
@@ -94,30 +59,10 @@ public class EntityMergerTest extends AbstractDataTest {
 	 */
 	@Test
 	public void selfMerge() throws Exception {
-		File sourceFile1;
-		File sourceFile2;
-		File expectedOutputFile;
-		File actualOutputFile;
-		
-		// Generate files.
-		sourceFile1 = dataUtils.createDataFile("v0_6/merge/merge-in-1.osm");
-		sourceFile2 = dataUtils.createDataFile("v0_6/merge/merge-in-1.osm");
-		expectedOutputFile = dataUtils.createDataFile("v0_6/merge/merge-in-1.osm");
-		actualOutputFile = dataUtils.newFile();
-		
-		// Run the merge.
-		Osmosis.run(
-			new String [] {
-				"-q",
-				"--read-xml-0.6", sourceFile2.getPath(),
-				"--read-xml-0.6", sourceFile1.getPath(),
-				"--merge",
-				"--write-xml-0.6", actualOutputFile.getPath()
-			}
-		);
-		
-		// Validate that the output file matches the expected result.
-		dataUtils.compareFiles(expectedOutputFile, actualOutputFile);
+		checkMerge("v0_6/merge/merge-in-1.osm", 
+				"v0_6/merge/merge-in-1.osm",
+				"v0_6/merge/merge-in-1.osm", 
+				null);
 	}
 	
 	/**
@@ -127,49 +72,17 @@ public class EntityMergerTest extends AbstractDataTest {
 	 */
 	@Test
 	public void timestampConflictResolution() throws Exception {
-		File sourceFile1;
-		File sourceFile2;
-		File expectedOutputFile;
-		File actualOutputFile;
-		
-		// Generate files.
-		sourceFile1 = dataUtils.createDataFile("v0_6/merge/merge-in-1.osm");
-		sourceFile2 = dataUtils.createDataFile("v0_6/merge/merge-in-2-timestamp.osm");
-		expectedOutputFile = dataUtils.createDataFile("v0_6/merge/merge-out-timestamp.osm");
-		actualOutputFile = dataUtils.newFile();
-		
-		// Run the merge.
-		Osmosis.run(
-			new String [] {
-				"-q",
-				"--read-xml-0.6", sourceFile2.getPath(),
-				"--read-xml-0.6", sourceFile1.getPath(),
-				"--merge",
-				"conflictResolutionMethod=timestamp",
-				"--write-xml-0.6", actualOutputFile.getPath()
-			}
-		);
-		
-		// Validate that the output file matches the expected result.
-		dataUtils.compareFiles(expectedOutputFile, actualOutputFile);
+		checkMerge("v0_6/merge/merge-in-1.osm", 
+				"v0_6/merge/merge-in-2-timestamp.osm",
+				"v0_6/merge/merge-out-timestamp.osm", 
+				new String[] {"conflictResolutionMethod=timestamp"});
 
-		// Timestamp conflict resolution should be commutative.
+		// Timestamp conflict resolution is commutative.
 		
-		// Run the merge.
-		Osmosis.run(
-			new String [] {
-				"-q",
-				"--read-xml-0.6", sourceFile1.getPath(),
-				"--read-xml-0.6", sourceFile2.getPath(),
-				"--merge",
-				"conflictResolutionMethod=timestamp",
-				"--write-xml-0.6", actualOutputFile.getPath()
-			}
-		);
-		
-		// Validate that the output file matches the expected result.
-		dataUtils.compareFiles(expectedOutputFile, actualOutputFile);
-
+		checkMerge("v0_6/merge/merge-in-2-timestamp.osm",
+				"v0_6/merge/merge-in-1.osm", 
+				"v0_6/merge/merge-out-timestamp.osm", 
+				new String[] {"conflictResolutionMethod=timestamp"});
 	}
 	
 	/**
@@ -179,48 +92,17 @@ public class EntityMergerTest extends AbstractDataTest {
 	 */
 	@Test
 	public void versionConflictResolution() throws Exception {
-		File sourceFile1;
-		File sourceFile2;
-		File expectedOutputFile;
-		File actualOutputFile;
-		
-		// Generate files.
-		sourceFile1 = dataUtils.createDataFile("v0_6/merge/merge-in-1.osm");
-		sourceFile2 = dataUtils.createDataFile("v0_6/merge/merge-in-2-version.osm");
-		expectedOutputFile = dataUtils.createDataFile("v0_6/merge/merge-out-version.osm");
-		actualOutputFile = dataUtils.newFile();
-		
-		// Run the merge.
-		Osmosis.run(
-			new String [] {
-				"-q",
-				"--read-xml-0.6", sourceFile2.getPath(),
-				"--read-xml-0.6", sourceFile1.getPath(),
-				"--merge",
-				"conflictResolutionMethod=version",
-				"--write-xml-0.6", actualOutputFile.getPath()
-			}
-		);
-		
-		// Validate that the output file matches the expected result.
-		dataUtils.compareFiles(expectedOutputFile, actualOutputFile);
+		checkMerge("v0_6/merge/merge-in-1.osm", 
+				"v0_6/merge/merge-in-2-version.osm",
+				"v0_6/merge/merge-out-version.osm", 
+				new String[] {"conflictResolutionMethod=version"});
 
-		// Version conflict resolution should be commutative.
+		// Version conflict resolution is commutative
 		
-		// Run the merge.
-		Osmosis.run(
-			new String [] {
-				"-q",
-				"--read-xml-0.6", sourceFile1.getPath(),
-				"--read-xml-0.6", sourceFile2.getPath(),
-				"--merge",
-				"conflictResolutionMethod=version",
-				"--write-xml-0.6", actualOutputFile.getPath()
-			}
-		);
-		
-		// Validate that the output file matches the expected result.
-		dataUtils.compareFiles(expectedOutputFile, actualOutputFile);
+		checkMerge("v0_6/merge/merge-in-2-version.osm",
+				"v0_6/merge/merge-in-1.osm", 
+				"v0_6/merge/merge-out-version.osm", 
+				new String[] {"conflictResolutionMethod=version"});
 
 	}
 	
@@ -231,54 +113,21 @@ public class EntityMergerTest extends AbstractDataTest {
 	 */
 	@Test
 	public void secondSourceConflictResolution() throws Exception {
-		File sourceFile1;
-		File sourceFile2;
-		File expectedOutputFile;
-		File actualOutputFile;
-		
-		// Generate files.
-		sourceFile1 = dataUtils.createDataFile("v0_6/merge/merge-in-1.osm");
-		sourceFile2 = dataUtils.createDataFile("v0_6/merge/merge-in-2-secondSource.osm");
-		expectedOutputFile = dataUtils.createDataFile("v0_6/merge/merge-out-secondSource.osm");
-		actualOutputFile = dataUtils.newFile();
-		
-		// Run the merge.
-		Osmosis.run(
-			new String [] {
-				"-q",
-				"--read-xml-0.6", sourceFile2.getPath(),
-				"--read-xml-0.6", sourceFile1.getPath(),
-				"--merge",
-				"conflictResolutionMethod=lastSource",
-				"--write-xml-0.6", actualOutputFile.getPath()
-			}
-		);
-		
-		// Validate that the output file matches the expected result.
-		dataUtils.compareFiles(expectedOutputFile, actualOutputFile);
+		checkMerge("v0_6/merge/merge-in-1.osm", 
+				"v0_6/merge/merge-in-2-secondSource.osm",
+				"v0_6/merge/merge-out-secondSource.osm", 
+				new String[] {"conflictResolutionMethod=lastSource"});
 
+		
 		// Timestamp conflict resolution is NOT commutative, 
 		// but it deserves testing as well.
 		// As the mergen-in-2 input does not contain any entities that are not 
 		// in the second source, the output should be identical to the first source.
 		
-		expectedOutputFile = dataUtils.createDataFile("v0_6/merge/merge-in-1.osm");
-
-		// Run the merge.
-		Osmosis.run(
-			new String [] {
-				"-q",
-				"--read-xml-0.6", sourceFile1.getPath(),
-				"--read-xml-0.6", sourceFile2.getPath(),
-				"--merge",
-				"conflictResolutionMethod=lastSource",
-				"--write-xml-0.6", actualOutputFile.getPath()
-			}
-		);
-		
-		// Validate that the output file matches the expected result.
-		dataUtils.compareFiles(expectedOutputFile, actualOutputFile);
-
+		checkMerge("v0_6/merge/merge-in-2-secondSource.osm",
+				"v0_6/merge/merge-in-1.osm", 
+				"v0_6/merge/merge-in-1.osm", 
+				new String[] {"conflictResolutionMethod=lastSource"});
 	}
 	
 	/**
@@ -288,48 +137,41 @@ public class EntityMergerTest extends AbstractDataTest {
 	 */
 	@Test
 	public void disjunctDatasets() throws Exception {
-		File sourceFile1;
-		File sourceFile2;
+		checkMerge("v0_6/merge/merge-in-1.osm", 
+				"v0_6/merge/merge-in-2-disjunct.osm",
+				"v0_6/merge/merge-out-disjunct.osm", 
+				new String[] {"conflictResolutionMethod=version"});
+	}
+	
+	private void checkMerge(String leftFileName, String rightFileName, 
+			String expectedOutputFileName, String[] parameters) throws Exception {
+		File leftFile;
+		File rightFile;
 		File expectedOutputFile;
 		File actualOutputFile;
 		
-		// Generate files.
-		sourceFile1 = dataUtils.createDataFile("v0_6/merge/merge-in-1.osm");
-		sourceFile2 = dataUtils.createDataFile("v0_6/merge/merge-in-2-disjunct.osm");
-		expectedOutputFile = dataUtils.createDataFile("v0_6/merge/merge-out-disjunct.osm");
+		leftFile = dataUtils.createDataFile(leftFileName);
+		rightFile = dataUtils.createDataFile(rightFileName);
+		expectedOutputFile = dataUtils.createDataFile(expectedOutputFileName);
 		actualOutputFile = dataUtils.newFile();
-		
-		// Run the merge.
-		Osmosis.run(
-			new String [] {
-				"-q",
-				"--read-xml-0.6", sourceFile2.getPath(),
-				"--read-xml-0.6", sourceFile1.getPath(),
-				"--merge",
-				"--write-xml-0.6", actualOutputFile.getPath()
-			}
-		);
-		
-		// Validate that the output file matches the expected result.
-		dataUtils.compareFiles(expectedOutputFile, actualOutputFile);
 
-		// Merging of disjunct datasets should be commutative.
-		
-		// Run the merge.
-		Osmosis.run(
-			new String [] {
+		List<String> argsList = new ArrayList<String>(Arrays.asList(
 				"-q",
-				"--read-xml-0.6", sourceFile1.getPath(),
-				"--read-xml-0.6", sourceFile2.getPath(),
-				"--merge",
-				"conflictResolutionMethod=version",
-				"--write-xml-0.6", actualOutputFile.getPath()
-			}
-		);
+				"--read-xml-0.6", rightFile.getPath(),
+				"--read-xml-0.6", leftFile.getPath(),
+				"--merge-0.6"));
 		
-		// Validate that the output file matches the expected result.
-		dataUtils.compareFiles(expectedOutputFile, actualOutputFile);
+		if (parameters != null) {
+			for (String param : parameters) {
+				argsList.add(param);
+			}
+		}
+		
+		argsList.addAll(Arrays.asList(
+				"--write-xml-0.6", actualOutputFile.getPath()));
+		Osmosis.run(argsList.toArray(new String[argsList.size()]));
 
+		dataUtils.compareFiles(expectedOutputFile, actualOutputFile);
 	}
 	
 	/**
