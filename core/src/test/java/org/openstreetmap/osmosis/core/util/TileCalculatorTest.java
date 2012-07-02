@@ -1,9 +1,8 @@
 // This software is released into the Public Domain.  See copying.txt for details.
-package org.openstreetmap.osmosis.core.mysql.common;
+package org.openstreetmap.osmosis.core.util;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openstreetmap.osmosis.core.util.TileCalculator;
 
 
 /**
