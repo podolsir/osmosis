@@ -34,7 +34,7 @@ public class ChangeDeriverTest extends AbstractDataTest {
 	 */
 	@Test
 	public void emptyInputs() throws Exception {
-		deriveChange("v0_6/empty-entity.osm", 
+		checkDeriveChange("v0_6/empty-entity.osm", 
 				"v0_6/empty-entity.osm", 
 				"v0_6/empty-change.osc");
 	}
@@ -46,7 +46,7 @@ public class ChangeDeriverTest extends AbstractDataTest {
 	 */
 	@Test
 	public void sameInputs() throws Exception {
-		deriveChange("v0_6/derive_change/simple.osm", 
+		checkDeriveChange("v0_6/derive_change/simple.osm", 
 				"v0_6/derive_change/simple.osm", 
 				"v0_6/empty-change.osc");
 	}
@@ -59,7 +59,7 @@ public class ChangeDeriverTest extends AbstractDataTest {
 	 */
 	@Test
 	public void leftEmpty() throws Exception {
-		deriveChange("v0_6/empty-entity.osm", 
+		checkDeriveChange("v0_6/empty-entity.osm", 
 				"v0_6/derive_change/simple.osm", 
 				"v0_6/derive_change/full-create.osc");
 	}
@@ -116,7 +116,7 @@ public class ChangeDeriverTest extends AbstractDataTest {
 	 */
 	@Test
 	public void modifyNode() throws Exception {
-		deriveChange("v0_6/derive_change/simple.osm", 
+		checkDeriveChange("v0_6/derive_change/simple.osm", 
 				"v0_6/derive_change/modified.osm", 
 				"v0_6/derive_change/simple-modified.osc");
 	}
@@ -130,7 +130,7 @@ public class ChangeDeriverTest extends AbstractDataTest {
 	 */
 	@Test
 	public void modifyNodeLowerVersion() throws Exception {
-		deriveChange("v0_6/derive_change/simple.osm", 
+		checkDeriveChange("v0_6/derive_change/simple.osm", 
 				"v0_6/derive_change/modified-lower.osm", 
 				"v0_6/derive_change/simple-modified-lower.osc");
 	}
@@ -188,7 +188,7 @@ public class ChangeDeriverTest extends AbstractDataTest {
 	}
 	
 	
-	private void deriveChange(String leftFileName, String rightFileName, 
+	private void checkDeriveChange(String leftFileName, String rightFileName, 
 			String expectedOutputFileName) throws IOException {
 		File leftFile;
 		File rightFile;
